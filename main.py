@@ -2,12 +2,13 @@ import os
 import sys
 import ctypes
 import psutil
+import time
 
 fname = r"\\testlib.so"
 
 path = os.getcwd()
-path = path + fname
-funcs = ctypes.CDLL(path)
+usrpath = f"C:\\Users\\{os.getlogin()}"
+dllpath = path + fname
 
 def whoami():
     print( os.getlogin())
@@ -15,8 +16,8 @@ def whoami():
 def echo(param):
     print(param) 
 def ls():
-    scn = os.scandir(cwd)
-    print("\n"+"files at "+f"{cwd}"+"\n")
+    scn = os.scandir(usrpath)
+    print("\n"+"files at "+f"{usrpath}"+"\n")
     for i in scn:
         print("\t"+i.name)
 def touch(fname):
@@ -30,7 +31,7 @@ def cat(fname):
         else:
             print(cont)
 def mkdir(fname):
-    print(f"created directory at {cwd}")
+    print(f"created directory at {path}")
     os.makedirs(fname)
 
 def rm(fname):
@@ -63,12 +64,24 @@ database_without_param = {
                 }
 
 os.system("cls")
-cwd = fr"C:\\Users\\{os.getlogin()}"
-os.chdir(cwd)
+os.chdir(usrpath)
 
+#welcome screen
+
+print("""
+\t\t\t\t\t\t _               _
+\t\t\t\t\t\t ____   _____   ____  _   _ 
+\t\t\t\t\t\t|  _ \ |  _  | / ___|| | | |
+\t\t\t\t\t\t| |_| || | | || |__  | | | |
+\t\t\t\t\t\t|    / | |_| | \__ \ | |_| |
+\t\t\t\t\t\t|  _ \ |  _  |    | ||  _  |
+\t\t\t\t\t\t| |_| || | | | ___| || | | |
+\t\t\t\t\t\t|____/ |_| |_||____/ |_| |_|""")
+time.sleep(3)
+os.system("cls")
 
 while True:
-    usr = str(input("$ "))
+    usr = str(input(f"{usrpath} $ "))
     if usr in database_without_param:
         database_without_param[usr]()
     elif usr.split()[0] in database_with_param:

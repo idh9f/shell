@@ -1,6 +1,6 @@
 import os
 import sys
-import ctypes
+import colorama
 import psutil
 import time
 
@@ -47,12 +47,19 @@ def about():
 def status():
     print(psutil.version_info)
 
+def cd(dirname:str):
+    global cwd
+    cwd = os.chdir(f"{cwd}\\{dirname}")
+    print(f"{cwd}\\{dirname}")
+
+
 database_with_param = {"echo":echo,
                         "touch" : touch,
                         "cat" :cat,
                         "mkdir" : mkdir,
                         "rm" :rm,
-                        "rmdir":rmdir 
+                        "rmdir":rmdir,
+                        "cd" : cd
                             }
 database_without_param = {
             "whoami":whoami,
@@ -66,8 +73,6 @@ database_without_param = {
 os.system("cls")
 os.chdir(usrpath)
 
-#welcome screen
-
 print("""
 \t\t\t\t\t\t _               _
 \t\t\t\t\t\t ____   _____   ____  _   _ 
@@ -79,11 +84,18 @@ print("""
 \t\t\t\t\t\t|____/ |_| |_||____/ |_| |_|""")
 time.sleep(3)
 os.system("cls")
-
+global cwd
+cwd = usrpath
 while True:
     usr = str(input(f"{usrpath} $ "))
-    if usr in database_without_param:
+    if usr == '':
+        continue
+        
+
+    elif usr in database_without_param:
         database_without_param[usr]()
     elif usr.split()[0] in database_with_param:
         command,args = usr.split()
         database_with_param[command](args)
+    elif usr not in database_with_param and usr not in database_without_param:
+        print(f"command:{usr} :not found!")

@@ -1,2 +1,0 @@
-
-        cwd = f"{cwd}\\{dirname}

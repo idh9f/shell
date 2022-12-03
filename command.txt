@@ -1,1 +1,0 @@
-gcc -shared -o testlib.so -fPIC main.c     

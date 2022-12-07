@@ -1,12 +1,18 @@
 import os
 import sys
-import colorama
+import keyboard
 import psutil
 import time
+from tqdm import tqdm
+from time import sleep
+import psutil
+import threading
 
 
 usrpath = f"C:\\Users\\{os.getlogin()}"
 
+def THREAD(func):
+    threading.Thread(target=func).start()
 
 def whoami():
     print(os.getlogin())
@@ -57,10 +63,33 @@ def cls():
 
 def about():
     os.system("winver")
-
+ext = None
+def read_and_exit():
+    global ext
+    ext = keyboard.read_key()
+    if ext == 'q':
+        return ext
+        
 
 def status():
-    print(psutil.version_info)
+
+    with tqdm(total=100, desc='cpu%', position=1) as cpubar, tqdm(total=100, desc='ram%', position=0) as rambar:
+
+        while True:
+            THREAD(read_and_exit)
+            rambar.n=psutil.virtual_memory().percent
+            cpubar.n=psutil.cpu_percent()
+            rambar.refresh()
+            cpubar.refresh()
+            sleep(0.5)
+            global ext
+            if ext == 'q':
+                break
+            else:
+                pass
+    
+
+
 
 
 def cd(dirname: str):
@@ -85,7 +114,7 @@ database_without_param = {
     "stat": status
 }
 
-os.system("cls")
+
 os.chdir(usrpath)
 
 print("""
@@ -98,7 +127,7 @@ print("""
 \t\t\t\t\t\t| |_| || | | | ___| || | | |
 \t\t\t\t\t\t|____/ |_| |_||____/ |_| |_|""")
 time.sleep(3)
-os.system("cls")
+
 global cwd
 cwd = usrpath
 while True:

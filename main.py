@@ -141,4 +141,4 @@ while True:
         command, args = usr.split()
         database_with_param[command](args)
     elif usr not in database_with_param and usr not in database_without_param:
-        print(f"command:{usr} :not found!")
+        print(f"{usr}:command not found!")

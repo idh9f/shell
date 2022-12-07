@@ -9,10 +9,12 @@ import psutil
 import threading
 
 
-usrpath = f"C:\\Users\\{os.getlogin()}"
+usr_path = f"C:\\Users\\{os.getlogin()}"
+
 
 def THREAD(func):
     threading.Thread(target=func).start()
+
 
 def whoami():
     print(os.getlogin())
@@ -63,33 +65,33 @@ def cls():
 
 def about():
     os.system("winver")
-ext = None
+
+
+ext_key = None
+
+
 def read_and_exit():
-    global ext
-    ext = keyboard.read_key()
-    if ext == 'q':
-        return ext
-        
+    global ext_key
+    ext_key = keyboard.read_key()
+    if ext_key == 'q':
+        return ext_key
+
 
 def status():
 
     with tqdm(total=100, desc='cpu%', position=1) as cpubar, tqdm(total=100, desc='ram%', position=0) as rambar:
-
         while True:
             THREAD(read_and_exit)
-            rambar.n=psutil.virtual_memory().percent
-            cpubar.n=psutil.cpu_percent()
+            rambar.n = psutil.virtual_memory().percent
+            cpubar.n = psutil.cpu_percent()
             rambar.refresh()
             cpubar.refresh()
             sleep(0.5)
-            global ext
-            if ext == 'q':
+            global ext_key
+            if ext_key == 'q':
                 break
             else:
                 pass
-    
-
-
 
 
 def cd(dirname: str):
@@ -114,8 +116,8 @@ database_without_param = {
     "stat": status
 }
 
-
-os.chdir(usrpath)
+cls()
+os.chdir(usr_path)
 
 print("""
 \t\t\t\t\t\t                
@@ -126,10 +128,10 @@ print("""
 \t\t\t\t\t\t|  _ \ |  _  |    | ||  _  |
 \t\t\t\t\t\t| |_| || | | | ___| || | | |
 \t\t\t\t\t\t|____/ |_| |_||____/ |_| |_|""")
-time.sleep(3)
-
+time.sleep(1)
+cls()
 global cwd
-cwd = usrpath
+cwd = usr_path
 while True:
     usr = str(input(f"{cwd} $ "))
     if usr == '':

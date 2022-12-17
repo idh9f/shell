@@ -2,17 +2,18 @@ import os
 import sys
 import keyboard
 import psutil
-import time
+import colorama
 from tqdm import tqdm
 from time import sleep
-import psutil
 import threading
-
+import time
 
 usrpath = f"C:\\Users\\{os.getlogin()}"
 
+
 def THREAD(func):
     threading.Thread(target=func).start()
+
 
 def whoami():
     print(os.getlogin())
@@ -23,11 +24,23 @@ def echo(param):
 
 
 def ls():
+    global cwd
     print(cwd)
     scn = os.scandir(cwd)
-    print("\n"+"files at "+f"{cwd}"+"\n")
+
+    print(colorama.Back.LIGHTCYAN_EX+"\n" +
+          "files at "+f"{cwd}"+colorama.Back.RESET+"\n")
+
     for i in scn:
-        print("\t|\n\t|___>"+i.name)
+        info = os.stat(i)
+        
+        if info.st_file_attributes == 8208  or info.st_file_attributes == 38:
+            pass
+        else:
+            if i.is_dir:
+                print(colorama.Fore.BLUE+i.name)
+    
+            
 
 
 def touch(fname):
@@ -63,13 +76,24 @@ def cls():
 
 def about():
     os.system("winver")
+
+
 ext = None
+
+
 def read_and_exit():
     global ext
     ext = keyboard.read_key()
     if ext == 'q':
-        return ext
-        
+        return
+
+
+def run(executable: str):
+    if os.path.exists(f"{cwd}\\{executable}"):
+        os.system(f"{cwd}\\{executable}")
+    elif os.path.exists(executable):
+        os.system(executable)
+
 
 def status():
 
@@ -77,8 +101,8 @@ def status():
 
         while True:
             THREAD(read_and_exit)
-            rambar.n=psutil.virtual_memory().percent
-            cpubar.n=psutil.cpu_percent()
+            rambar.n = psutil.virtual_memory().percent
+            cpubar.n = psutil.cpu_percent()
             rambar.refresh()
             cpubar.refresh()
             sleep(0.5)
@@ -87,25 +111,33 @@ def status():
                 break
             else:
                 pass
-    
-
-
 
 
 def cd(dirname: str):
     global cwd
-    cwd = f"{cwd}\\{dirname}"
+    print(dirname)
+    os.chdir(dirname)
+    if os.path.exists(dirname):
+        cwd = dirname
+
+    elif os.path.exists(f"{cwd}\\{dirname}"):
+
+        cwd = f"{cwd}\\{dirname}"
+    else:
+        print("error: Directory does not exists")
 
 
-database_with_param = {"echo": echo,
+
+commands_with_param = {"echo": echo,
                        "touch": touch,
                        "cat": cat,
                        "mkdir": mkdir,
                        "rm": rm,
                        "rmdir": rmdir,
-                       "cd": cd
+                       "cd": cd,
+                       "rn": run
                        }
-database_without_param = {
+commands_without_param = {
     "whoami": whoami,
     "ls": ls,
     "cls": cls,
@@ -115,8 +147,7 @@ database_without_param = {
 }
 
 
-os.chdir(usrpath)
-
+cls()
 print("""
 \t\t\t\t\t\t                
 \t\t\t\t\t\t ____   _____   ____  _   _ 
@@ -126,19 +157,23 @@ print("""
 \t\t\t\t\t\t|  _ \ |  _  |    | ||  _  |
 \t\t\t\t\t\t| |_| || | | | ___| || | | |
 \t\t\t\t\t\t|____/ |_| |_||____/ |_| |_|""")
-time.sleep(3)
+time.sleep(2)
+cls()
 
-global cwd
 cwd = usrpath
 while True:
-    usr = str(input(f"{cwd} $ "))
+    usr = str(input(colorama.Fore.LIGHTRED_EX+""+colorama.Fore.BLACK+colorama.Back.LIGHTRED_EX+"  "+cwd+colorama.Back.RESET+colorama.Fore.LIGHTRED_EX+""+"\n"+colorama.Fore.LIGHTRED_EX +
+              colorama.Fore.LIGHTGREEN_EX+"⚡"+colorama.Fore.MAGENTA + f"{os.getlogin()} "+colorama.Back.RESET+colorama.Fore.LIGHTGREEN_EX+">"+colorama.Fore.RESET+colorama.Fore.RESET+" "))
     if usr == '':
         continue
 
-    elif usr in database_without_param:
-        database_without_param[usr]()
-    elif usr.split()[0] in database_with_param:
-        command, args = usr.split()
-        database_with_param[command](args)
-    elif usr not in database_with_param and usr not in database_without_param:
+    elif usr in commands_without_param:
+        commands_without_param[usr]()
+    elif usr.split()[0] in commands_with_param:
+        try:
+            command, args = usr.split()
+            commands_with_param[command](args)
+        except ValueError as e:
+            print(e)
+    elif usr not in commands_with_param and usr not in commands_without_param:
         print(f"{usr}:command not found!")
